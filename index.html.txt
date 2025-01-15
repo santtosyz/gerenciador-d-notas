@@ -1,0 +1,24 @@
+<div class="container">
+  <h1>Gerenciador de Notas</h1>
+  <div class="nova-nota">
+    <input type="text" id="titulo" placeholder="Título da Nota" />
+    <select id="categoria">
+      <option value="trabalho">Trabalho</option>
+      <option value="pessoal">Pessoal</option>
+      <option value="estudos">Estudos</option>
+    </select>
+    <button id="adicionarNota">Adicionar Nota</button>
+  </div>
+
+  <div class="filtros">
+    <input type="text" id="busca" placeholder="Buscar notas..." />
+    <select id="filtroCategoria">
+      <option value="todas">Todas as Categorias</option>
+      <option value="trabalho">Trabalho</option>
+      <option value="pessoal">Pessoal</option>
+      <option value="estudos">Estudos</option>
+    </select>
+  </div>
+
+  <ul id="listaNotas"></ul>
+</div>

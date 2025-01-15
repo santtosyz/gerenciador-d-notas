@@ -1,0 +1,104 @@
+// Elementos da interface
+const tituloInput = document.getElementById('titulo');
+const categoriaInput = document.getElementById('categoria');
+const adicionarBtn = document.getElementById('adicionarNota');
+const buscaInput = document.getElementById('busca');
+const filtroCategoria = document.getElementById('filtroCategoria');
+const listaNotas = document.getElementById('listaNotas');
+
+// Inicializar lista de notas
+let notas = JSON.parse(localStorage.getItem('notas')) || [];
+
+// Renderizar notas
+function renderizarNotas() {
+  const busca = buscaInput.value.toLowerCase();
+  const filtro = filtroCategoria.value;
+
+  listaNotas.innerHTML = '';
+
+  notas
+    .filter((nota) => {
+      const correspondeBusca = nota.titulo.toLowerCase().includes(busca);
+      const correspondeCategoria = filtro === 'todas' || nota.categoria === filtro;
+      return correspondeBusca && correspondeCategoria;
+    })
+    .forEach((nota, index) => {
+      const li = document.createElement('li');
+      li.innerHTML = `
+        <span>${nota.titulo} - <em>${nota.categoria}</em></span>
+        <div class="acoes">
+          <button class="editar">Editar</button>
+          <button class="remover">Remover</button>
+        </div>
+      `;
+
+      // Evento para editar
+      li.querySelector('.editar').addEventListener('click', () => editarNota(index, li));
+
+      // Evento para remover
+      li.querySelector('.remover').addEventListener('click', () => removerNota(index));
+
+      listaNotas.appendChild(li);
+    });
+}
+
+// Adicionar nota
+adicionarBtn.addEventListener('click', () => {
+  const titulo = tituloInput.value.trim();
+  const categoria = categoriaInput.value;
+
+  if (!titulo) {
+    alert('Digite o título da nota.');
+    return;
+  }
+
+  notas.push({ titulo, categoria });
+  salvarNotas();
+  renderizarNotas();
+  tituloInput.value = '';
+});
+
+// Remover nota
+function removerNota(index) {
+  notas.splice(index, 1);
+  salvarNotas();
+  renderizarNotas();
+}
+
+// Editar nota
+function editarNota(index, li) {
+  li.classList.add('editando');
+  const nota = notas[index];
+
+  li.innerHTML = `
+    <span><input type="text" value="${nota.titulo}" /></span>
+    <div class="acoes">
+      <button class="salvar">Salvar</button>
+      <button class="cancelar">Cancelar</button>
+    </div>
+  `;
+
+  const inputEdicao = li.querySelector('input');
+  const salvarBtn = li.querySelector('.salvar');
+  const cancelarBtn = li.querySelector('.cancelar');
+
+  salvarBtn.addEventListener('click', () => {
+    notas[index].titulo = inputEdicao.value.trim() || nota.titulo;
+    salvarNotas();
+    renderizarNotas();
+  });
+
+  cancelarBtn.addEventListener('click', renderizarNotas);
+}
+
+// Salvar notas no LocalStorage
+function salvarNotas() {
+  localStorage.setItem('notas', JSON.stringify(notas));
+}
+
+// Eventos de busca e filtro
+buscaInput.addEventListener('input', renderizarNotas);
+filtroCategoria.addEventListener('change', renderizarNotas);
+
+// Inicializar aplicação
+renderizarNotas();
